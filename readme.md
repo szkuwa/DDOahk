@@ -9,8 +9,9 @@ First you need to download and install [AutoHotKey], then [download][master] thi
 The default hotkeys are:
 - **Ctrl + F1** - Dump item that you are currently viewing (tooltip must be visible and **Ctrl + Right Click** must be able to paste given item name to chat
 - **Ctrl + F2** - change current character name
-  > This allows to store items in separate folders since everything will be saved in <**%Script Directory%\\<character name>\\**>
-  > If you will put "**\\**" in character name you can create sub folders. For example namig character as "**toon1\bank**" the script will create folder "**bank**" inside a folder named "**toon1**"
+
+Changing character name allows to store items in separate folders since everything will be saved in "**%Script Directory%\\character name\\**"
+If you will put "**\\**" in character name you can create sub folders. For example namig character as "**toon1\bank**" will create folder "**bank**" inside a folder named "**toon1**"
 
 You can change the default hotstrings by editing script source code (lines **^F1::** and **^F2::**, use [AHK Hotkeys] as reference
 
