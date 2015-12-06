@@ -11,8 +11,8 @@
 ;; - if this is set as false (or blank) the user will be prompted to enter character name each time he run/reload the script (false must be written without quotes)
 ;; - if the name contains \ string it will make a sub folder(s)
 ;; for example "toon1\bank" will create folder "bank" inside folder "toon1"
-characterName := "toon1"
-;characterName := false
+;characterName := "toon1"
+characterName := false
 
 ;; image quality, 0-100 (percents, the more the better)
 imageQuality := 100
@@ -23,14 +23,33 @@ logFile := "log.txt"
 
 ;================== DO NOT TOUCH LINES BELOW UNLESS YOU KNOW WHAT YOU'RE DOING
 
-;================== frame offsets, in pixels so the item looks nice after taking a screenshot
-availableFrames = normal
+;================== frame offsets in pixels
+availableFrames = normal,white,gold,cooper
 frameOffset := Object() ; dont touch this
+
 frameOffset["normal"] := Object()
 frameOffset["normal"]["top"] := -4
 frameOffset["normal"]["left"] := -4
 frameOffset["normal"]["right"] := 23
 frameOffset["normal"]["bottom"] := 55
+
+frameOffset["white"] := Object()
+frameOffset["white"]["top"] := 1
+frameOffset["white"]["left"] := -10
+frameOffset["white"]["right"] := 28
+frameOffset["white"]["bottom"] := 30
+
+frameOffset["gold"] := Object()
+frameOffset["gold"]["top"] := 1
+frameOffset["gold"]["left"] := -10
+frameOffset["gold"]["right"] := 36
+frameOffset["gold"]["bottom"] := 20
+
+frameOffset["cooper"] := Object()
+frameOffset["cooper"]["top"] := -4
+frameOffset["cooper"]["left"] := -4
+frameOffset["cooper"]["right"] := 34
+frameOffset["cooper"]["bottom"] := 30
 ;================== end of frame offsets
 
 ;================== scrtip initialization
@@ -59,7 +78,7 @@ return
 	if (bitmap = 0)
 	{
 		; script was unable to grab item frame - play sound and exit
-		SoundPlay *-1
+		SoundPlay *16
 		return
 	}
 
@@ -71,7 +90,7 @@ return
 	if ErrorLevel 
 	{
 		; if there was an error (nothing went to clipboard) then exit
-		SoundPlay *-1
+		SoundPlay *16
 		return
 	}
 	
@@ -82,7 +101,7 @@ return
 	{
 		SoundPlay *64
 	} else {
-		SoundPlay *-1
+		SoundPlay *16
 	}
 	
 	Send {esc}
@@ -134,8 +153,8 @@ GrabItemFrame(frameType)
 	
 	BottomX := BottomX-TopX+frameOffset[frameType]["right"]
 	BottomY := BottomY-TopY+frameOffset[frameType]["bottom"]
-	TopX := TopX+frameOffset[frameType]["top"]
-	TopY := TopY+frameOffset[frameType]["left"]
+	TopX := TopX+frameOffset[frameType]["left"]
+	TopY := TopY+frameOffset[frameType]["top"]
 	
 	screen=%TopX%|%TopY%|%BottomX%|%BottomY%
 	
@@ -157,6 +176,8 @@ SaveImage(bitmap, item)
 	global imageQuality
 	global characterName
 	
+	; replace ":" in item name since its not a valid character for file name
+	item := StrReplace(item, ":", "")
 	file := characterName . "\" . item . ".jpg"
 	
 	IfNotExist %characterName%
