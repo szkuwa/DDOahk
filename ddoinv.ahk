@@ -54,6 +54,9 @@ frameOffset["cooper"]["bottom"] := 30
 
 ;================== scrtip initialization
 #Persistent
+	Log("Starting...")
+	frames := StrSplit(availableFrames, ",")
+	CheckForFiles()
 	; if no character name was specified ask the user on startup
 	if (characterName = false)
 	{
@@ -66,7 +69,6 @@ frameOffset["cooper"]["bottom"] := 30
 	}
 
 	pToken := Gdip_Startup()			; initialize graphic lib
-	frames := StrSplit(availableFrames, ",")
 	OnExit("ClearScriptVariables")	; register function that will be run before shutting down
 return
 
@@ -196,12 +198,46 @@ SaveImage(bitmap, item)
 	return false
 }
 
+; This function will check for missing files and download them if needed
+CheckForFiles()
+{
+	global frames
+	
+	IfNotExist frames
+		FileCreateDir frames
+		
+	Loop % frames.MaxIndex()
+	{
+		frameName := frames[a_index]
+		CheckFile("frames\" . frameName . "_tl.png")
+		CheckFile("frames\" . frameName . "_br.png")
+	}
+}
+
+; This function will check for missing file and download it
+CheckFile(file)
+{
+	Log("Checking " . file)
+	if (FileExist(file) = "")
+	{
+		url := "http://raw.githubusercontent.com/szkuwa/DDOahk/master/" . file
+		url := StrReplace(url, "\", "/")
+		UrlDownloadToFile %url%, %file%
+		if ErrorLevel
+		{
+			Log("There was a problem downloading " . url)
+		} else {
+			Log("Successfully downloaded " . url)
+		}
+	}
+}
 
 Log(text)
 {
 	global logFile
 	if (logFile) {
-		FileAppend %text%`n, %logFile%
+		FormatTime, CurrentDateTime,, dd-MM-yy HH:mm
+		FileAppend [%CurrentDateTime%] %text%`n, %logFile%
 	}
 }
 
@@ -213,6 +249,7 @@ ClearScriptVariables(ExitReason, ExitCode)
 	{
 		Gdip_Shutdown(pToken)	; unload graphic lib
 	}
+	Log("Exit.")
 	
 	return 0	; if non-zero prevents shutdown
 }
